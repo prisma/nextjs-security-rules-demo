@@ -32,9 +32,14 @@ export const prisma = new PrismaClient().$extends(
         // create: true,
       },
       post: {
-        read({ context }) {
-          console.log(`post,read - context: `, context);
-          return context.userId === "cm8iizddw00005e0vlpqps7yj";
+        read({ }) {
+          return true;
+        },
+        update({ context }) {
+          return context.userId === context.authorIdOfPostToChange;
+        },
+        delete({ context }) {
+          return context.userId === context.authorIdOfPostToChange;
         },
       },
       // You control what you expose to the Policy Client
@@ -44,6 +49,8 @@ export const prisma = new PrismaClient().$extends(
     // It will be validated when you set the user context
     contextSchema: z.object({
       userId: z.string(),
+      authorIdOfPostToChange: z.string().optional(),
+      // postIds: z.array(z.string()),
     }),
   }),
 );

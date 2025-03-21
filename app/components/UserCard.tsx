@@ -16,8 +16,9 @@ type UserCardProps = {
 }
 
 export default function UserCard({ name, email, postCount, posts }: UserCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
 
+  console.log(`UserCard - posts`, posts);
   return (
     <li 
       className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow cursor-pointer transition-all duration-200 hover:shadow-md"

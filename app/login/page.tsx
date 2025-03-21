@@ -9,6 +9,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
@@ -22,6 +23,8 @@ export default function LoginPage() {
         setError("Invalid credentials");
         return;
       }
+
+      console.log("successful login", response);
 
       router.push("/");
       router.refresh();

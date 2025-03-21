@@ -1,52 +1,52 @@
 "use client";
 
 import UserCard from "./components/UserCard";
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { policy } from "@/lib/policy";
+import { useSession } from "next-auth/react";
+import { Post } from "@prisma/client";
 
-type User = {
-  id: string;
-  name: string | null;
-  email: string;
-  _count: { posts: number };
-  posts: { id: string; title: string; published: boolean }[];
-};
-
-async function getUsersWithPosts() {
-  console.log(`getUsersWithPosts`);
-  const users = await policy.user.findMany({
-    include: {
-      _count: {
-        select: { posts: true },
+async function getPostsForUser(userId: string) {
+  console.log(`getUsersWithPosts for user: ${userId}`);
+  try {
+    const posts = await policy.post.findMany({
+      where: {
+        authorId: userId,
       },
-      posts: {
-        select: {
-          id: true,
-          title: true,
-          published: true,
-        },
-      },
-    },
-  });
-  console.log(`users`, users);
-  return users;
+    });
+    console.log(`posts`, posts);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
 }
 
 export default function Home() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const { data: session } = useSession();
+  console.log(`Home — session`, session);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const users = await getUsersWithPosts();
-        setUsers(users);
+        // console.log(`Home — useEffect — session`, session);
+        const posts = await getPostsForUser(session?.user.id || "");
+        setPosts(posts);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch posts'));
       } finally {
         setIsLoading(false);
       }
     };
     fetchUsers();
-  }, []);
+  }, [session]);
+
+  if (!session) {
+    return <div>Log in first</div>;
+  }
 
   return (
     <div className="min-h-screen p-8">
@@ -55,17 +55,20 @@ export default function Home() {
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
+        ) : error ? (
+          <div className="rounded-lg bg-red-50 p-4 border border-red-200">
+            <h3 className="text-red-800 font-medium">Error</h3>
+            <p className="text-red-700 mt-1">{error.message}</p>
+          </div>
         ) : (
           <ul className="space-y-3">
-            {users.map((user) => (
               <UserCard
-                key={user.id}
-                name={user.name}
-                email={user.email}
-                postCount={user._count.posts}
-                posts={user.posts}
+                key={session.user.id}
+                name={session.user.name}
+                email={session.user.email}
+                postCount={posts.length}
+                posts={posts}
               />
-            ))}
           </ul>
         )}
       </main>

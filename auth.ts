@@ -20,11 +20,12 @@ export const authOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
+        console.log(`authorize - fetched user`, user);
 
         if (!user) {
           return await prisma.user.create({
             data: {
-              name: credentials.name ?? credentials.email,
+              name: credentials.name || credentials.email.split('@')[0],
               email: credentials.email,
               password: await bcrypt.hash(credentials.password, 10),
             },
@@ -39,7 +40,7 @@ export const authOptions = {
         if (!isCorrectPassword) {
           throw new Error("Invalid credentials");
         }
-
+        console.log(`authorize - returned user`, user);
         return user;
       },
     }),

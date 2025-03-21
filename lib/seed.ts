@@ -89,49 +89,38 @@ async function main() {
     }),
   ]);
 
-  // Create 5 posts
-  await Promise.all([
-    prisma.post.create({
-      data: {
-        title: 'Getting Started with Web Development',
-        content: 'Web development is an exciting journey that combines creativity with technical skills. In this post, we\'ll explore the fundamental concepts that every aspiring web developer should know.',
-        published: true,
-        authorId: users[0].id,
-      },
-    }),
-    prisma.post.create({
-      data: {
-        title: 'The Future of Artificial Intelligence',
-        content: 'AI continues to transform industries and our daily lives. From machine learning to neural networks, we\'re witnessing unprecedented advances in technology that are reshaping our world.',
-        published: true,
-        authorId: users[1].id,
-      },
-    }),
-    prisma.post.create({
-      data: {
-        title: 'Sustainable Living Tips',
-        content: 'Making small changes in our daily lives can have a big impact on the environment. Here are practical tips for reducing your carbon footprint and living more sustainably.',
-        published: false,
-        authorId: users[2].id,
-      },
-    }),
-    prisma.post.create({
-      data: {
-        title: 'The Art of Photography',
-        content: 'Photography is more than just clicking a button. It\'s about understanding light, composition, and storytelling. Learn how to capture moments that tell compelling stories.',
-        published: true,
-        authorId: users[3].id,
-      },
-    }),
-    prisma.post.create({
-      data: {
-        title: 'Healthy Cooking at Home',
-        content: 'Cooking healthy meals doesn\'t have to be complicated or time-consuming. Discover simple recipes and techniques that will help you maintain a nutritious diet while enjoying delicious food.',
-        published: true,
-        authorId: users[4].id,
-      },
-    }),
-  ]);
+  // Create 3 posts for each user (2 published, 1 unpublished)
+  for (const user of users) {
+    await Promise.all([
+      // First published post
+      prisma.post.create({
+        data: {
+          title: `${user.name}'s First Blog Post`,
+          content: 'This is a published post discussing various topics in technology and development. The content explores innovative ideas and practical solutions.',
+          published: true,
+          authorId: user.id,
+        },
+      }),
+      // Second published post
+      prisma.post.create({
+        data: {
+          title: `${user.name}'s Technical Deep Dive`,
+          content: 'A detailed technical analysis of modern development practices and methodologies. This post shares insights and best practices.',
+          published: true,
+          authorId: user.id,
+        },
+      }),
+      // Unpublished draft post
+      prisma.post.create({
+        data: {
+          title: `${user.name}'s Draft Post`,
+          content: 'This is a work in progress post that hasn\'t been published yet. It contains draft content that needs to be reviewed and finalized.',
+          published: false,
+          authorId: user.id,
+        },
+      }),
+    ]);
+  }
 
   console.log('Seed data created successfully!');
 }
