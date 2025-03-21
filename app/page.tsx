@@ -1,10 +1,10 @@
 "use client";
 
-import UserCard from "./components/UserCard";
 import { useEffect, useState } from "react";
 import { policy } from "@/lib/policy";
 import { useSession } from "next-auth/react";
 import { Post } from "@prisma/client";
+import PostCard from "./components/PostCard";
 
 async function getPostsForUser(userId: string) {
   console.log(`getUsersWithPosts for user: ${userId}`);
@@ -26,12 +26,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { data: session } = useSession();
-  console.log(`Home — session`, session);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchPosts = async () => {
       try {
-        // console.log(`Home — useEffect — session`, session);
         const posts = await getPostsForUser(session?.user.id || "");
         setPosts(posts);
         setError(null);
@@ -41,7 +39,7 @@ export default function Home() {
         setIsLoading(false);
       }
     };
-    fetchUsers();
+    fetchPosts();
   }, [session]);
 
   if (!session) {
@@ -51,6 +49,8 @@ export default function Home() {
   return (
     <div className="min-h-screen p-8">
       <main className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">My Posts</h1>
+        
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -61,15 +61,17 @@ export default function Home() {
             <p className="text-red-700 mt-1">{error.message}</p>
           </div>
         ) : (
-          <ul className="space-y-3">
-              <UserCard
-                key={session.user.id}
-                name={session.user.name}
-                email={session.user.email}
-                postCount={posts.length}
-                posts={posts}
-              />
-          </ul>
+          <div className="space-y-4">
+            {posts.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                You haven&apos;t created any posts yet.
+              </p>
+            ) : (
+              posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))
+            )}
+          </div>
         )}
       </main>
     </div>
