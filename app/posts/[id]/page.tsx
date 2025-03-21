@@ -4,6 +4,7 @@ import { policy } from "@/lib/policy";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+
 export default async function Post({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -24,7 +25,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
   // Server action to delete the post
   async function deletePost() {
     "use server";
-
+    // const currentContext = policy.$policy.getGlobalContext();
     policy.$policy.setGlobalContext({
       userId: session?.user.id || "",
       authorIdOfPostToChange: post?.author?.id || "",
