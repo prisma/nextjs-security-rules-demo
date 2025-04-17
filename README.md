@@ -10,6 +10,7 @@ Set up the project and add a DB:
 npm install
 npx prisma init --db
 # copy DATABASE_URL into .env
+# also set AUTH_SECRET and NEXTAUTH_URL in .env
 npx prisma migrate dev
 npm run policy:deploy
 # update publicKey in lib/policy.ts
