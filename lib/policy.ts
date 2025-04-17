@@ -18,7 +18,7 @@ const globalForPolicy = global as unknown as { policy: PolicyClient<typeof prism
 
 export const policy =
   globalForPolicy.policy || new PolicyClient<typeof prisma>({
-    publicKey: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJoYXNoIjoiY2xpd3hpbTVwMDA1eHFoMGczbXZxcHlhay0yOTM3OTgwODY3In0.Re_LF6bx9usxlUMxACFIzgeNG3nqt1wQJKoTSCDMexm0TaAEt88DETuUfXW1p5X6ZlcRSz3TStoGlma8_gDsDQ",
+    publicKey: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJoYXNoIjoiY2xpd3hpbTVwMDA1eHFoMGczbXZxcHlhay0yOTgzMTUxNDc4In0.adwd_x2_4BCETH5Spbb31s4-zWjFaW1CgFU-g7cLIaLuL4YtsjM8pBBtRUou82MIsmLoxC3pqlMJjn_njNthAw",
   });  
 
 if (process.env.NODE_ENV !== "production") globalForPolicy.policy = policy;
