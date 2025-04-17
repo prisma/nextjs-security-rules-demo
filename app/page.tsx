@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { policy } from "@/lib/policy";
+import { authorizedClient } from "@/lib/db";
 import { useSession } from "next-auth/react";
 import { Post } from "@prisma/client";
 import PostCard from "./components/PostCard";
@@ -9,7 +9,7 @@ import PostCard from "./components/PostCard";
 async function getPostsForUser(userId: string) {
   console.log(`getUsersWithPosts for user: ${userId}`);
   try {
-    const posts = await policy.post.findMany({
+    const posts = await authorizedClient.post.findMany({
       where: {
         authorId: userId,
       },

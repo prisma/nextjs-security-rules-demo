@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { policy } from "@/lib/policy";
+import { authorizedClient } from "@/lib/db";
 export default function Header() {
   const { data: session } = useSession();
-  policy.$policy.setGlobalContext({ userId: session? session?.user.id : "" });
+  authorizedClient.$rules.setGlobalContext({ userId: session? session?.user.id : "" });
 
   return (
     <header className="w-full bg-white shadow-md py-4 px-8">
