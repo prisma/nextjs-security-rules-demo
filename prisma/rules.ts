@@ -19,7 +19,7 @@ const rules = defineRules({
   }),
 });
 
-export { rules };
+export default rules;
 
 
 // {

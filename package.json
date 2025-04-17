@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "policy:deploy": "prisma platform policy --early-access deploy my_rules -f ./lib/prisma.ts",
+    "rules:deploy": "prisma rules --early-access deploy my_rules -f ./prisma/rules.ts",
     "seed": "tsx lib/seed.ts"
   },
   "dependencies": {
