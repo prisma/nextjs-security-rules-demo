@@ -11,7 +11,7 @@ npm install
 npx prisma init --db
 # copy DATABASE_URL into .env
 npx prisma migrate dev
-npm run policy:deploy
+npm run rules:deploy
 # update publicKey in lib/db.ts
 npm run seed
 ```
