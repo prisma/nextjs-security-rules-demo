@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { authorizedClient } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -8,14 +8,14 @@ export async function GET(request: Request) {
   const offset = (page - 1) * postsPerPage;
 
   // Fetch paginated posts
-  const posts = await prisma.post.findMany({
+  const posts = await authorizedClient.post.findMany({
     skip: offset,
     take: postsPerPage,
     orderBy: { createdAt: "desc" },
     include: { author: { select: { name: true } } },
   });
 
-  const totalPosts = await prisma.post.count();
+  const totalPosts = await authorizedClient.post.count();
   const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   return NextResponse.json({ posts, totalPages });
