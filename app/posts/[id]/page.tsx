@@ -1,17 +1,21 @@
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
-import { policy } from "@/lib/policy";
+import { authorizedClient } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 
-export default async function Post({ params }: { params: Promise<{ id: string }> }) {
+export default async function Post({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const session = await getServerSession(authOptions);
-  const postId = id // parseInt(id);
+  const postId = id; // parseInt(id);
 
-  const post = await policy.post.findUnique({
+  const post = await authorizedClient.post.findUnique({
     where: { id: postId },
     include: {
       author: true,
@@ -26,11 +30,11 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
   async function deletePost() {
     "use server";
     // const currentContext = policy.$policy.getGlobalContext();
-    policy.$policy.setGlobalContext({
+    authorizedClient.$rules.setGlobalContext({
       userId: session?.user.id || "",
-      authorIdOfPostToChange: post?.author?.id || "",
-    })
-    await policy.post.delete({
+      // authorIdOfPostToChange: post?.author?.id || "",
+    });
+    await authorizedClient.post.delete({
       where: {
         id: postId,
       },
@@ -43,11 +47,16 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
       <article className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
         {/* Post Title */}
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
+        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
+          {post.title}
+        </h1>
 
         {/* Author Information */}
         <p className="text-lg text-gray-600 mb-4">
-          by <span className="font-medium text-gray-800">{post.author?.name || "Anonymous"}</span>
+          by{" "}
+          <span className="font-medium text-gray-800">
+            {post.author?.name || "Anonymous"}
+          </span>
         </p>
 
         {/* Content Section */}
@@ -55,7 +64,9 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
           {post.content ? (
             <p>{post.content}</p>
           ) : (
-            <p className="italic text-gray-500">No content available for this post.</p>
+            <p className="italic text-gray-500">
+              No content available for this post.
+            </p>
           )}
         </div>
       </article>

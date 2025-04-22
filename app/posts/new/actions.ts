@@ -1,9 +1,9 @@
 "use server";
 
-import { policy } from "@/lib/policy";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { authorizedClient } from "@/lib/db";
 
 export async function createPost(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -11,7 +11,7 @@ export async function createPost(formData: FormData) {
     throw new Error("You must be logged in to create a post");
   }
 
-  await policy.post.create({
+  await authorizedClient.post.create({
     data: {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
@@ -20,4 +20,4 @@ export async function createPost(formData: FormData) {
   });
 
   redirect("/posts");
-} 
+}

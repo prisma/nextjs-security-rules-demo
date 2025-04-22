@@ -12,7 +12,7 @@ npx prisma init --db
 # copy DATABASE_URL into .env
 npx prisma migrate dev
 npm run policy:deploy
-# update publicKey in lib/policy.ts
+# update publicKey in lib/db.ts
 npm run seed
 ```
 
@@ -25,7 +25,6 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can create new users or log in with an existing one from [`seed.ts`](/lib/seed.ts), e.g.:
+
 - Email: `sarah.johnson@example.com`
 - Password: `password123`
-
-
