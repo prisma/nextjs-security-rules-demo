@@ -9,6 +9,7 @@ Set up the project and add a DB:
 ```
 npm install
 npx prisma init --db
+# rename .env.example to .env
 # copy DATABASE_URL into .env
 npx prisma migrate dev
 npm run rules:deploy
