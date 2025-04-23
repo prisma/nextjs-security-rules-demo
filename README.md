@@ -100,7 +100,7 @@ Now, paste the URL from the previous step into it as a value for the `DATABASE_U
 
 ```bash
 # .env
-DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=ey...
++DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=ey...
 ```
 
 #### 3.2. Configure NextAuth
