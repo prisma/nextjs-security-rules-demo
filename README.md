@@ -94,7 +94,7 @@ Then, create a `.env` file in the project root by renaming `.env.example`:
 mv .env.example .env
 ```
 
-#### 3.1. Configure database connedction
+#### 3.1. Configure database connection
 
 Now, paste the URL from the previous step into it as a value for the `DATABASE_URL` environment variable. For example:
 
