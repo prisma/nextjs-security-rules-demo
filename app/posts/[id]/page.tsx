@@ -27,7 +27,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
 
     const session = await getServerSession(authOptions);
     if (!session) {
-      return { error: "You need to be authenticated to perform this action." };
+      return { error: "You need to be authenticated to delete this post." };
     }
     console.log("deletePost, set global context");
     console.log("session?.user.id", session?.user.id);
@@ -36,16 +36,11 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       userId: session?.user.id || "",
       authorIdOfPostToChange: post?.author?.id || "",
     });
-    try {
-      await authorizedClient.post.delete({
-        where: {
-          id: postId,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      return { error: "You need to be authenticated to perform this action." };
-    }
+    await authorizedClient.post.delete({
+      where: {
+        id: postId,
+      },
+    });
     redirect("/");
   }
 
@@ -54,26 +49,21 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
     "use server";
 
     const session = await getServerSession(authOptions);
-        console.log("publishPost, set global context");
+    console.log("publishPost, set global context");
     console.log("session?.user.id", session?.user.id);
     console.log("post?.author?.id", post?.author?.id);
     if (!session) {
-      return { error: "You need to be authenticated to perform this action." };
+      return { error: "You need to be authenticated to publish this post." };
     }
-    
+
     authorizedClient.$rules.setGlobalContext({
       userId: session?.user.id || "",
       authorIdOfPostToChange: post?.author?.id || "",
     });
-    try {
-      await authorizedClient.post.update({
-        where: { id: postId },
-        data: { published: true },
-      });
-    } catch (error) {
-      console.error(error);
-      return { error: "You need to be authenticated to perform this action." };
-    }
+    await authorizedClient.post.update({
+      where: { id: postId },
+      data: { published: true },
+    });
     redirect("/");
   }
 
@@ -103,10 +93,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
         </div>
       </article>
 
-      <PostActions 
-        publishAction={!post.published ? publishPost : undefined} 
-        deleteAction={deletePost} 
-      />
+      <PostActions publishAction={!post.published ? publishPost : undefined} deleteAction={deletePost} />
     </div>
   );
 }

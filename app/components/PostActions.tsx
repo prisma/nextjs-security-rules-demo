@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 
 type ActionState = {
   error?: string;
@@ -30,8 +31,8 @@ export function PostActions({
   publishAction?: () => Promise<ActionState>;
   deleteAction: () => Promise<ActionState>;
 }) {
-  const [publishState, publishPost] = useFormState(publishAction || (() => Promise.resolve(initialState)), initialState);
-  const [deleteState, deletePost] = useFormState(deleteAction, initialState);
+  const [publishState, publishPost] = useActionState(publishAction || (() => Promise.resolve(initialState)), initialState);
+  const [deleteState, deletePost] = useActionState(deleteAction, initialState);
 
   return (
     <div className="flex flex-col items-center gap-4 mt-6">
