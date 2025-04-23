@@ -9,16 +9,12 @@ import { defineRules } from "@prisma/security-rules";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
+
 const rules = defineRules({
   prisma: new PrismaClient(),
   rules: {
     $allModels: false,
-    user: {
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
+    user: true,
     post: {
       read: true,
       create({ context }) {
@@ -27,43 +23,24 @@ const rules = defineRules({
         }
         return false;
       },
-      update: true,
-      delete: true,
+      update({ context }) {
+        if (context) {
+          return context.userId === context.authorIdOfPostToChange;
+        }
+        return false;
+      },
+      delete({ context }) {
+        if (context) {
+          return context.userId === context.authorIdOfPostToChange;
+        }
+        return false;
+      }
     },
   },
   contextSchema: z.object({
-    userId: z.string(),
+    userId: z.string().optional(),
+    authorIdOfPostToChange: z.string().optional(),
   }),
 });
 
 export default rules;
-
-
-// {
-//   rules: {
-//     user: {
-//       read({ context }) {
-//         console.log(`user,read - context: `, context);
-//         return true;
-//       },
-//     },
-//     post: {
-//       read({ }) {
-//         return true;
-//       },
-//       create({ }) {
-//         return true;
-//       },
-//       update({ context }) {
-//         return context.userId === context.authorIdOfPostToChange;
-//       },
-//       delete({ context }) {
-//         return context.userId === context.authorIdOfPostToChange;
-//       },
-//     },
-//   },
-//   contextSchema: z.object({
-//     userId: z.string(),
-//     authorIdOfPostToChange: z.string().optional(),
-//   }),
-// }
