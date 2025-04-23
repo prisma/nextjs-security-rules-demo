@@ -103,7 +103,10 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
         </div>
       </article>
 
-      <PostActions publishAction={publishPost} deleteAction={deletePost} />
+      <PostActions 
+        publishAction={!post.published ? publishPost : undefined} 
+        deleteAction={deletePost} 
+      />
     </div>
   );
 }

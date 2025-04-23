@@ -27,10 +27,10 @@ export function PostActions({
   publishAction,
   deleteAction,
 }: {
-  publishAction: () => Promise<ActionState>;
+  publishAction?: () => Promise<ActionState>;
   deleteAction: () => Promise<ActionState>;
 }) {
-  const [publishState, publishPost] = useFormState(publishAction, initialState);
+  const [publishState, publishPost] = useFormState(publishAction || (() => Promise.resolve(initialState)), initialState);
   const [deleteState, deletePost] = useFormState(deleteAction, initialState);
 
   return (
@@ -44,11 +44,13 @@ export function PostActions({
 
       <div className="flex gap-4">
         {/* Publish Button */}
-        <form action={publishPost}>
-          <SubmitButton className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50">
-            Publish Post
-          </SubmitButton>
-        </form>
+        {publishAction && (
+          <form action={publishPost}>
+            <SubmitButton className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50">
+              Publish Post
+            </SubmitButton>
+          </form>
+        )}
         {/* Delete Button */}
         <form action={deletePost}>
           <SubmitButton className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50">
