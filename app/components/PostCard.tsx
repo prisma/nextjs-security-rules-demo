@@ -11,9 +11,16 @@ export default function PostCard({ post }: PostCardProps) {
       href={`/posts/${post.id}`}
       className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
     >
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-        {post.title}
-      </h3>
+      <div className="flex items-center gap-2 mb-2">
+        <h3 className="text-xl font-semibold text-gray-900">
+          {post.title}
+        </h3>
+        {!post.published && (
+          <span className="px-2 py-1 text-xs font-semibold text-white bg-gray-500 rounded-lg">
+            DRAFT
+          </span>
+        )}
+      </div>
       {post.content && (
         <p className="text-gray-600 line-clamp-2">
           {post.content}
@@ -28,4 +35,4 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
     </Link>
   )
-} 
+}

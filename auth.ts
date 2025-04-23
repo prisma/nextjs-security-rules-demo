@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { type NextAuthOptions } from "next-auth";
-import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { authorizedClient } from "./lib/db";
 
 export const authOptions = {
   providers: [
@@ -17,15 +17,14 @@ export const authOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await authorizedClient.user.findUnique({
           where: { email: credentials.email },
         });
-        console.log(`authorize - fetched user`, user);
 
         if (!user) {
-          return await prisma.user.create({
+          return await authorizedClient.user.create({
             data: {
-              name: credentials.name || credentials.email.split('@')[0],
+              name: credentials.name || credentials.email.split("@")[0],
               email: credentials.email,
               password: await bcrypt.hash(credentials.password, 10),
             },
@@ -40,7 +39,6 @@ export const authOptions = {
         if (!isCorrectPassword) {
           throw new Error("Invalid credentials");
         }
-        console.log(`authorize - returned user`, user);
         return user;
       },
     }),

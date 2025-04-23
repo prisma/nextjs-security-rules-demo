@@ -23,9 +23,6 @@ export default function LoginPage() {
         setError("Invalid credentials");
         return;
       }
-
-      console.log("successful login", response);
-
       router.push("/");
       router.refresh();
     } catch {

@@ -1,17 +1,16 @@
 export const dynamic = "force-dynamic"; // This disables SSG and ISR
 
-import { policy } from "@/lib/policy";
+import { authorizedClient } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { PostActions } from "@/app/components/PostActions";
 
 export default async function Post({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const postId = id;
 
-  const session = await getServerSession(authOptions);
-  const postId = id // parseInt(id);
-
-  const post = await policy.post.findUnique({
+  const post = await authorizedClient.post.findUnique({
     where: { id: postId },
     include: {
       author: true,
@@ -25,25 +24,54 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
   // Server action to delete the post
   async function deletePost() {
     "use server";
-    // const currentContext = policy.$policy.getGlobalContext();
-    policy.$policy.setGlobalContext({
+
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return { error: "You need to be authenticated to delete this post." };
+    }
+
+    authorizedClient.$rules.setGlobalContext({
       userId: session?.user.id || "",
       authorIdOfPostToChange: post?.author?.id || "",
-    })
-    await policy.post.delete({
+    });
+    await authorizedClient.post.delete({
       where: {
         id: postId,
       },
     });
+    redirect("/");
+  }
 
-    redirect("/posts");
+  // Server action to publish the post
+  async function publishPost() {
+    "use server";
+
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return { error: "You need to be authenticated to publish this post." };
+    }
+
+    authorizedClient.$rules.setGlobalContext({
+      userId: session?.user.id || "",
+      authorIdOfPostToChange: post?.author?.id || "",
+    });
+    await authorizedClient.post.update({
+      where: { id: postId },
+      data: { published: true },
+    });
+    redirect("/");
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
       <article className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
         {/* Post Title */}
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
+        <div className="flex items-center gap-2 mb-4">
+          <h1 className="text-5xl font-extrabold text-gray-900">{post.title}</h1>
+          {!post.published && (
+            <span className="px-2 py-1 text-xs font-semibold text-white bg-gray-500 rounded-lg ml-auto">DRAFT</span>
+          )}
+        </div>
 
         {/* Author Information */}
         <p className="text-lg text-gray-600 mb-4">
@@ -60,15 +88,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
         </div>
       </article>
 
-      {/* Delete Button */}
-      <form action={deletePost} className="mt-6">
-        <button
-          type="submit"
-          className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors"
-        >
-          Delete Post
-        </button>
-      </form>
+      <PostActions publishAction={!post.published ? publishPost : undefined} deleteAction={deletePost} />
     </div>
   );
 }
