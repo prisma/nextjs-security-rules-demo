@@ -20,7 +20,6 @@ export const authOptions = {
         const user = await authorizedClient.user.findUnique({
           where: { email: credentials.email },
         });
-        console.log(`authorize - fetched user`, user);
 
         if (!user) {
           return await authorizedClient.user.create({
@@ -40,7 +39,6 @@ export const authOptions = {
         if (!isCorrectPassword) {
           throw new Error("Invalid credentials");
         }
-        console.log(`authorize - returned user`, user);
         return user;
       },
     }),

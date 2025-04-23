@@ -7,7 +7,6 @@ import { authorizedClient } from "@/lib/db";
 
 export async function createPost(formData: FormData) {
   const session = await getServerSession(authOptions);
-  console.log(`set global context`, session);
   authorizedClient.$rules.setGlobalContext({ userId: session? session?.user.id : "" });
 
   if (!session?.user) {

@@ -29,9 +29,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
     if (!session) {
       return { error: "You need to be authenticated to delete this post." };
     }
-    console.log("deletePost, set global context");
-    console.log("session?.user.id", session?.user.id);
-    console.log("post?.author?.id", post?.author?.id);
+
     authorizedClient.$rules.setGlobalContext({
       userId: session?.user.id || "",
       authorIdOfPostToChange: post?.author?.id || "",
@@ -49,9 +47,6 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
     "use server";
 
     const session = await getServerSession(authOptions);
-    console.log("publishPost, set global context");
-    console.log("session?.user.id", session?.user.id);
-    console.log("post?.author?.id", post?.author?.id);
     if (!session) {
       return { error: "You need to be authenticated to publish this post." };
     }
