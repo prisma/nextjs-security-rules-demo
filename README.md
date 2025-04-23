@@ -98,7 +98,7 @@ mv .env.example .env
 
 Now, paste the URL from the previous step into it as a value for the `DATABASE_URL` environment variable. For example:
 
-```bash
+```diff
 # .env
 +DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=ey...
 ```
@@ -107,12 +107,12 @@ Now, paste the URL from the previous step into it as a value for the `DATABASE_U
 
 Next, add the following environment variables to `.env`:
 
-```bash
+```diff
 # .env
 DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=ey...
 
-NEXTAUTH_URL="http://localhost:3000" # for running locally
-NEXTAUTH_SECRET="fgkv9eqocqWZyJL05FpquUFu5jlGXRZaQWHw4jBzOYM=" # generate your own string in production
++NEXTAUTH_URL="http://localhost:3000" # for running locally
++NEXTAUTH_SECRET="fgkv9eqocqWZyJL05FpquUFu5jlGXRZaQWHw4jBzOYM=" # generate your own string in production
 ```
 
 ### 4. Run a migration & seed the database
@@ -149,8 +149,14 @@ export const authorizedClient = new AuthorizedClient<typeof rules>({
 
 The key is read as an environment variable, so go back to your `.env` file and add it there:
 
-```bash
-NEXT_PUBLIC_SECURITY_RULES_PUBLIC_KEY="ey..."
+```diff
+# .env
+DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=ey...
+
+NEXTAUTH_URL="http://localhost:3000" # for running locally
+NEXTAUTH_SECRET="fgkv9eqocqWZyJL05FpquUFu5jlGXRZaQWHw4jBzOYM=" # generate your own string in production
+
++NEXT_PUBLIC_SECURITY_RULES_PUBLIC_KEY="ey..."
 ```
 
 ### 6. Run the app
