@@ -7,6 +7,9 @@ import { authorizedClient } from "@/lib/db";
 
 export async function createPost(formData: FormData) {
   const session = await getServerSession(authOptions);
+  console.log(`set global context`, session);
+  authorizedClient.$rules.setGlobalContext({ userId: session? session?.user.id : "" });
+
   if (!session?.user) {
     throw new Error("You must be logged in to create a post");
   }
@@ -19,5 +22,5 @@ export async function createPost(formData: FormData) {
     },
   });
 
-  redirect("/posts");
+  redirect("/");
 }

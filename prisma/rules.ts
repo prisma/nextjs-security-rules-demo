@@ -9,10 +9,6 @@ import { defineRules } from "@prisma/security-rules";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
-function isAuthenticated(context: { userId: string } | undefined) {
-  return !!context?.userId;
-}
-
 const rules = defineRules({
   prisma: new PrismaClient(),
   rules: {
@@ -26,7 +22,10 @@ const rules = defineRules({
     post: {
       read: true,
       create({ context }) {
-        return isAuthenticated(context);
+        if (context?.userId) {
+          return true;
+        }
+        return false;
       },
       update: true,
       delete: true,
