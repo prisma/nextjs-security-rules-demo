@@ -2,7 +2,7 @@
 
 This repo demonstrates usage of [Prisma Postgres security rules](https://pris.ly/security-rules-ea) which enables database access from the frontend.
 
-> **Note**: Security rules is a new feature of Prisma Postgres that's currently in Early Access and not yet suitable for production use. If you try it out, please [share your feedback](https://pris./ly/discord) with us to help shape its API and overall DX.
+> **Note**: Security rules is a new feature of Prisma Postgres that's currently in Early Access and not yet suitable for production use. If you try it out, please [share your feedback](https://pris.ly/discord) with us to help shape its API and overall DX.
 
 The app is based on [Next.js 15](https://nextjs.org/docs) with App Router, [NextAuth.js](https://next-auth.js.org/). It purposely uses `"use client"` in its component to demonstrate how the database can be securely accessed from the frontend.
 
@@ -94,7 +94,7 @@ Then, create a `.env` file in the project root by renaming `.env.example`:
 mv .env.example .env
 ```
 
-#### 3.1. Configure database connedction
+#### 3.1. Configure database connection
 
 Now, paste the URL from the previous step into it as a value for the `DATABASE_URL` environment variable. For example:
 
