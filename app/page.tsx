@@ -14,7 +14,23 @@ async function getPostsForUser(userId: string) {
         authorId: userId,
       },
     });
-    console.log(`posts`, posts);
+    console.log(`users posts`, posts);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getLatestPosts(take: number) {
+  console.log(`getLatestPosts: ${take}`);
+  try {
+    const posts = await authorizedClient.post.findMany({
+      take: take,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    console.log(`latest posts`, posts);
     return posts;
   } catch (error) {
     throw error;
@@ -30,8 +46,14 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const posts = await getPostsForUser(session?.user.id || "");
-        setPosts(posts);
+
+        if (session?.user.id) {
+          const posts = await getPostsForUser(session?.user.id || "");
+          setPosts(posts);
+        } else {
+          const posts = await getLatestPosts(5);
+          setPosts(posts);
+        }
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch posts'));
@@ -42,14 +64,10 @@ export default function Home() {
     fetchPosts();
   }, [session]);
 
-  if (!session) {
-    return <div>Log in first</div>;
-  }
-
   return (
     <div className="min-h-screen p-8">
       <main className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">My Posts</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{session ? "My Posts" : "Latest Posts"}</h1>
         
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
