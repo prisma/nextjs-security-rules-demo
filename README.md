@@ -2,6 +2,8 @@
 
 This repo demonstrates usage of Prisma Postgres' [security rules](https://pris.ly/security-rules-ea) which enables database access from the frontend.
 
+> **Note**: Security rules is a new feature of Prisma Postgres that's currently in Early Access and not yet suitable for production use. If you try it out, please [share your feedback](https://pris./ly/discord) with us to help shape its API and overall DX.
+
 The app is based on [Next.js 15](https://nextjs.org/docs) with App Router, [NextAuth.js](https://next-auth.js.org/). It purposely uses `"use client"` in its component to demonstrate how the database can be securely accessed from the frontend.
 
 ## Getting started
@@ -35,7 +37,7 @@ After successful creation, you will see output similar to the following:
 
 <details><summary>CLI output</summary>
 
-```terminal
+```
 Let's set up your Prisma Postgres database!
 ? Select your region: ap-northeast-1 - Asia Pacific (Tokyo)
 ? Enter a project name: testing-migration
@@ -166,6 +168,95 @@ You can create new users or log in with an existing one from [`seed.ts`](/lib/se
 - **Email:** `sarah.johnson@example.com`
 - **Password:** `password123`
 
-
 ## Security rules
 
+The authorization logic for this app is defined in [`prisma/rules.ts`](./prisma/rules.ts):
+
+```ts
+const rules = defineRules({
+  prisma: new PrismaClient(),
+  rules: {
+    $allModels: false,
+    user: true,
+    post: {
+      read: true,
+      create({ context }) {
+        if (context?.userId) {
+          return true;
+        }
+        return false;
+      },
+      update({ context }) {
+        if (context) {
+          return context.userId === context.authorIdOfPostToChange;
+        }
+        return false;
+      },
+      delete({ context }) {
+        if (context) {
+          return context.userId === context.authorIdOfPostToChange;
+        }
+        return false;
+      }
+    },
+  },
+  contextSchema: z.object({
+    userId: z.string().optional(),
+    authorIdOfPostToChange: z.string().optional(),
+  }),
+});
+```
+
+The `userId` and `authorIdOfPostToChange` fields on the `context` object are set in our application code, e.g. in the `publishPost` Server Action:
+
+```ts
+async function publishPost() {
+  "use server";
+
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { error: "You need to be authenticated to publish this post." };
+  }
+
+  authorizedClient.$rules.setGlobalContext({
+    userId: session?.user.id || "",
+    authorIdOfPostToChange: post?.author?.id || "",
+  });
+  await authorizedClient.post.update({
+    where: { id: postId },
+    data: { published: true },
+  });
+  redirect("/");
+}
+```
+
+Before the query is executed against the database, it runs through the rules engine where the permission logic for the `update` operation on `post` models is evaluated:
+
+```ts
+const rules = defineRules({
+  // ...
+  rules: {
+    post: {
+      // ...
+      update({ context }) {
+        if (context) {
+          return context.userId === context.authorIdOfPostToChange;
+        }
+        return false;
+      },
+      // ...
+    },
+  },
+  // ...
+});
+```
+
+If you want to change the rules, you need to [deploy](./package.json#L10) them again for the changes to take effect:
+
+```
+npm run rules:deploy
+```
+
+## Feedback
+
+Please join our [Discord](https://pris./ly/discord) to share your questions, thoughts and other feedback with us.
