@@ -8,7 +8,7 @@
 import { defineRules } from "@prisma/security-rules";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
-
+import { decodeUserId } from "../lib/jwt";
 
 const rules = defineRules({
   prisma: new PrismaClient(),
@@ -17,28 +17,31 @@ const rules = defineRules({
     user: true,
     post: {
       read: true,
-      create({ context }) {
-        if (context?.userId) {
-          return true;
+      async create({ context }) {
+        if (context?.userIdToken) {
+          const userId = await decodeUserId(context.userIdToken);
+          return userId !== null;
         }
         return false;
       },
-      update({ context }) {
+      async update({ context }) {
         if (context) {
-          return context.userId === context.authorIdOfPostToChange;
+          const userId = await decodeUserId(context.userIdToken || '');
+          return userId === context.authorIdOfPostToChange;
         }
         return false;
       },
-      delete({ context }) {
+      async delete({ context }) {
         if (context) {
-          return context.userId === context.authorIdOfPostToChange;
+          const userId = await decodeUserId(context.userIdToken || '');
+          return userId === context.authorIdOfPostToChange;
         }
         return false;
       }
     },
   },
   contextSchema: z.object({
-    userId: z.string().optional(),
+    userIdToken: z.string().optional(),
     authorIdOfPostToChange: z.string().optional(),
   }),
 });
