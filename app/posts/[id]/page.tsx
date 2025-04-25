@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { PostActions } from "@/app/components/PostActions";
+import { encodeUserId } from "@/lib/jwt";
 
 export default async function Post({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -30,8 +31,9 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       return { error: "You need to be authenticated to delete this post." };
     }
 
+    const userIdToken = encodeUserId(session.user.id);
     authorizedClient.$rules.setGlobalContext({
-      userId: session?.user.id || "",
+      userIdToken,
       authorIdOfPostToChange: post?.author?.id || "",
     });
     await authorizedClient.post.delete({
@@ -51,8 +53,9 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       return { error: "You need to be authenticated to publish this post." };
     }
 
+    const userIdToken = encodeUserId(session.user.id);
     authorizedClient.$rules.setGlobalContext({
-      userId: session?.user.id || "",
+      userIdToken,
       authorIdOfPostToChange: post?.author?.id || "",
     });
     await authorizedClient.post.update({
