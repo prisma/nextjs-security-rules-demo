@@ -13,7 +13,7 @@ export async function createPost(formData: FormData) {
     throw new Error("You must be logged in to create a post");
   }
 
-  const userIdToken = encodeUserId(session.user.id);
+  const userIdToken = await encodeUserId(session.user.id);
   authorizedClient.$rules.setGlobalContext({ userIdToken });
 
   await authorizedClient.post.create({

@@ -17,23 +17,23 @@ const rules = defineRules({
     user: true,
     post: {
       read: true,
-      create({ context }) {
+      async create({ context }) {
         if (context?.userIdToken) {
-          const userId = decodeUserId(context.userIdToken);
+          const userId = await decodeUserId(context.userIdToken);
           return userId !== null;
         }
         return false;
       },
-      update({ context }) {
+      async update({ context }) {
         if (context) {
-          const userId = decodeUserId(context.userIdToken || '');
+          const userId = await decodeUserId(context.userIdToken || '');
           return userId === context.authorIdOfPostToChange;
         }
         return false;
       },
-      delete({ context }) {
+      async delete({ context }) {
         if (context) {
-          const userId = decodeUserId(context.userIdToken || '');
+          const userId = await decodeUserId(context.userIdToken || '');
           return userId === context.authorIdOfPostToChange;
         }
         return false;

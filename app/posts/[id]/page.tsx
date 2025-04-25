@@ -31,7 +31,7 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       return { error: "You need to be authenticated to delete this post." };
     }
 
-    const userIdToken = encodeUserId(session.user.id);
+    const userIdToken = await encodeUserId(session.user.id);
     authorizedClient.$rules.setGlobalContext({
       userIdToken,
       authorIdOfPostToChange: post?.author?.id || "",
@@ -53,11 +53,17 @@ export default async function Post({ params }: { params: Promise<{ id: string }>
       return { error: "You need to be authenticated to publish this post." };
     }
 
-    const userIdToken = encodeUserId(session.user.id);
+    console.log('Session user ID:', session.user.id);
+    console.log('Post author ID:', post?.author?.id);
+    
+    const userIdToken = await encodeUserId(session.user.id);
+    console.log('Generated userIdToken:', userIdToken);
+    
     authorizedClient.$rules.setGlobalContext({
       userIdToken,
       authorIdOfPostToChange: post?.author?.id || "",
     });
+    
     await authorizedClient.post.update({
       where: { id: postId },
       data: { published: true },
