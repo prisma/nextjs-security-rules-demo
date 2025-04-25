@@ -2,6 +2,7 @@
  * DEMO IMPLEMENTATION
  * This is a simplified version for demonstration purposes only.
  * In a real application, replace this with proper JWT implementation.
+ * Note that this must be able to run in CLoudflare Workers when deployed via `/prisma/rules.ts`.
  */
 
 export async function encodeUserId(userId: string): Promise<string> {
